@@ -1,25 +1,23 @@
-import { ActionArgs, LoaderArgs, redirect } from "@remix-run/node";
+import { redirect } from ".pnpm/react-router@6.11.0_react@18.2.0/node_modules/react-router";
+import { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
-import { deleteTodo, getTodo } from "~/api/todo.server";
-import invariant from "tiny-invariant";
-import { Todo } from "~/models/Todo";
+import { ClientApi } from "~/libs/clientApi.server";
 
-export async function loader({ params }: LoaderArgs): Promise<{ todo: Todo }> {
-  invariant(params.id, "Todo id not found");
-  invariant(Number(params.id), "Todo id not a number");
-
-  const todo = await getTodo(Number(params.id))
-
+export const loader = async ({ params }: LoaderArgs) => {
+  const { data } = await ClientApi.get(`/todo/${params.id}`);
   return {
-    todo
+    todo: data
   }
 }
 
-export async function action({ request }: ActionArgs) {
-  const dataForm = await request.formData();
-  const todoId = dataForm.get('id');
-  await deleteTodo(Number(todoId));
-  return redirect('..');
+export const action = async ({request}: ActionArgs) => {
+  const formData = await request.formData();
+
+  const id = formData.get('id');
+
+  await ClientApi.delete(`/todo/${id}`);
+
+  return redirect('/');
 }
 
 export default function TodoDetail() {
@@ -29,7 +27,7 @@ export default function TodoDetail() {
     <Link to="/">Back</Link>
     <div>{todo.title}</div>
     <div>{todo.description}</div>
-    <Form method="post">
+    <Form method="DELETE">
       <input type="hidden" name="id" value={todo.id} />
       <button type="submit">Delete</button>
     </Form>

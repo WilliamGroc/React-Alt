@@ -1,37 +1,39 @@
-import { ActionFunction } from "@remix-run/node";
-import { z } from "zod";
-import { makeDomainFunction } from 'domain-functions';
-import { formAction } from "~/form-action.server";
-import { Form } from "~/form";
+import { redirect } from ".pnpm/react-router@6.11.0_react@18.2.0/node_modules/react-router";
+import { ActionArgs } from "@remix-run/node";
+import { Form } from "@remix-run/react";
+import { ClientApi } from "~/libs/clientApi.server";
 import { Todo } from "~/models/Todo";
-import { createTodo } from "~/api/todo.server";
 
-const schema = z.object({
-  title: z.string().min(1),
-  description: z.string()
-});
+export const action = async ({ request }: ActionArgs) => {
+  const formData = await request.formData();
 
-const mutation = makeDomainFunction(schema)(async (values) => {
-  const newTodo: Omit<Todo, "id"> = {
-    title: values.title,
-    description: values.description,
+  const title = formData.get('title')?.toString() || '';
+  const description = formData.get('description')?.toString() || '';
+
+  const body: Omit<Todo, "id"> = {
+    title,
+    description,
     checked: false,
-    updateDate: new Date().toISOString()
-  };
+    updateDate: new Date().toDateString()
+  }
 
-  await createTodo(newTodo);
-})
+  await ClientApi.post('/todo', body);
 
+  return redirect('/');
+}
 
-export const action: ActionFunction = async ({ request }) =>
-  formAction({
-    request,
-    schema,
-    mutation,
-    successPath: '..',
-  });
-
-export default function TodoCreate() {
-
-  return (<Form schema={schema} />);
+export default function TodoForm() {
+  return <Form className="flex flex-col w-1/2" method="POST">
+    <div className="flex flex-col">
+      <label>Title</label>
+      <input type="text" name="title" />
+    </div>
+    <div className="flex flex-col">
+      <label>Description</label>
+      <textarea name="description"></textarea>
+    </div>
+    <div>
+      <button type="submit">Submit</button>
+    </div>
+  </Form>;
 }

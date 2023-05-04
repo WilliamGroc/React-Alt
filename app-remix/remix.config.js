@@ -1,11 +1,12 @@
 /** @type {import('@remix-run/dev').AppConfig} */
 module.exports = {
   ignoredRouteFiles: ["**/.*"],
-  serverDependenciesToBundle: ["axios"],
   // appDirectory: "app",
   // assetsBuildDirectory: "public/build",
   // serverBuildPath: "build/index.js",
   // publicPath: "/build/",
+  serverDependenciesToBundle: ['axios'],
+  serverModuleFormat: "cjs",
   future: {
     v2_errorBoundary: true,
     v2_meta: true,

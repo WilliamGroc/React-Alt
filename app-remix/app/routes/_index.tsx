@@ -1,48 +1,56 @@
-import { ActionArgs, V2_MetaFunction, redirect } from "@remix-run/node";
-import { Form, Link, useFetcher, useLoaderData, useSubmit } from "@remix-run/react";
-import { checkTodo, getAllTodos } from "~/api/todo.server";
+import { ActionArgs, V2_MetaFunction } from "@remix-run/node";
+import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
+import axios from "axios";
+import { useState } from "react";
+import { ClientApi } from "~/libs/clientApi.server";
+import { Todo } from "~/models/Todo";
 
 export const meta: V2_MetaFunction = () => {
-  return [{ title: "New Remix App" }];
+  return [{ title: "New TodoList Remix" }];
 };
 
-export async function loader() {
-  const todos = await getAllTodos();
-  todos.sort(data => data.checked ? 1 : -1);
-  return {
-    todos
-  };
+function sortTodo(a: Todo, b: Todo) {
+  return Number(a.checked) - Number(b.checked)
 }
 
-export async function action({ request }: ActionArgs) {
-  const formData = await request.formData();
+export const loader = async () => {
+  const { data } = await ClientApi.get<Todo[]>('/todo');
+  return {
+    todos: data.sort(sortTodo)
+  }
+}
 
-  const isChecked = formData.get('checked') === 'true';
-  await checkTodo(Number(formData.get('id')), isChecked);
-  return redirect('.');
+export const action = async ({ request }: ActionArgs) => {
+  const formData = await request.formData();
+  switch (request.method) {
+    case 'PATCH':
+      const id = formData.get('id');
+      const checked = formData.get('checked');
+      await ClientApi.patch(`/todo/${id}`, { checked: !!checked });
+      return null;
+  }
+
+  return null;
 }
 
 export default function Index() {
-  const fetcher = useFetcher();
   const { todos } = useLoaderData<typeof loader>();
+  const fetcher = useFetcher();
 
   return (
     <div>
-      <Link to="/todo/new">New todo</Link>
-      <div>
-        {todos.map(todo => (<div key={todo.id}>
-          <input
-            type="checkbox"
-            name="checked"
-            checked={todo.checked}
-            disabled={fetcher.state === 'submitting'}
-            onChange={(e) => {
-              fetcher.submit({ id: String(todo.id), checked: String(e.target.checked) }, { method: 'post' })
-            }}
-          />
-          <Link to={`/todo/${todo.id}`}>{todo.title}</Link>
-        </div>))}
-      </div>
+      <Link to="/todo/new">Create Todo</Link>
+      <ul>
+        {todos.map(todo => <li key={todo.id} style={{ display: 'flex' }}>
+          <Form onChange={e => fetcher.submit(e.currentTarget, { method: 'PATCH' })}>
+            <input type="hidden" name="id" value={todo.id} />
+            <input type="checkbox" defaultChecked={todo.checked} name="checked" />
+          </Form>
+          <Link to={`/todo/${todo.id}`}>
+            {todo.title}
+          </Link>
+        </li>)}
+      </ul>
     </div>
   );
 }

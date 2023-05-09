@@ -1,0 +1,34 @@
+.home_header {
+    position: relative;
+
+    .home_header_title {
+        text-align: center;
+        font-size: 1.25rem;
+        padding: 1rem;
+        margin-bottom: .5rem;
+    }
+    .home_header_addGoalButton {
+        position: absolute;
+        top: 10px;
+        right: -10px;
+        padding: 0;
+        border: none;
+        border-radius: 5px;
+        width: 35px;
+        height: 35px;
+        background-color: transparent;
+        transition: box-shadow 0.15s ease-in-out;
+
+        &:hover {
+            outline: none;
+            box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18),0 4px 15px 0 rgba(0,0,0,0.1);
+        }
+        .home_header_addGoalButton_icon {
+            font-size: 1.15rem;
+        }
+    }
+}
+.home_spinner-loader {
+    width: 50px;
+    height: 50px;
+}

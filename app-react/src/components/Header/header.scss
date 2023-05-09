@@ -1,0 +1,12 @@
+.header {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(34, 36, 38, 0.15);
+
+    .header_title {
+        text-align: center;
+        font-size: 1.75rem;
+    }
+}

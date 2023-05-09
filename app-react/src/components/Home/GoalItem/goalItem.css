@@ -1,0 +1,52 @@
+.goalItem {
+  display: flex;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.1), 0 2px 10px 0 rgba(0, 0, 0, 0.1);
+}
+.goalItem.done {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+.goalItem:not(:last-child) {
+  margin-bottom: 1rem;
+}
+.goalItem .goalItem_inputContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 45px;
+}
+.goalItem .goalItem_inputContainer .goalItem_inputContainer_checkbox {
+  margin: 0;
+  cursor: pointer;
+}
+.goalItem .goalItem_titleContainer {
+  padding: 1rem 1rem 1rem 0;
+  width: calc(100% - 45px);
+}
+.goalItem .goalItem_titleContainer.done {
+  width: calc(100% - 90px);
+}
+.goalItem .goalItem_titleContainer .goalItem_titleContainer_title {
+  border-left: 1px solid rgba(34, 36, 38, 0.15);
+  padding-left: 1rem;
+}
+.goalItem .goalItem_removeButton {
+  width: 45px;
+  background-color: transparent;
+  padding: 0;
+  border: none;
+  border-radius: 5px;
+  transition: box-shadow 0.15s ease-in-out;
+}
+.goalItem .goalItem_removeButton:hover {
+  outline: none;
+  box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.1);
+}
+.goalItem .goalItem_removeButton .goalItem_removeButton_icon {
+  color: #db2828;
+  font-size: 1.15rem;
+}
+
+/*# sourceMappingURL=goalItem.css.map */
